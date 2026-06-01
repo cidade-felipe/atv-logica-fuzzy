@@ -121,9 +121,7 @@ def validar_entrada(entrada: EntradaHumor) -> None:
 def classificar_humor(pontuacao: float) -> str:
     if pontuacao < 40:
         return 'baixo'
-    if pontuacao < 65:
-        return 'neutro'
-    return 'bom'
+    return 'neutro' if pontuacao < 65 else 'bom'
 
 
 def explicar_resultado(entrada: EntradaHumor, categoria: str) -> str:
