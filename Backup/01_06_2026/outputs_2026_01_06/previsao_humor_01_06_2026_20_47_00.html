@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Previsao fuzzy de humor</title>
+  <link rel="stylesheet" href="assets/css/previsao_humor.css">
+</head>
+<body>
+  <h1>Previsao fuzzy de humor</h1>
+  <p class="nota">
+    Este exemplo nao e diagnostico psicologico. Ele demonstra como a logica fuzzy pode
+    transformar sinais cotidianos em uma estimativa interpretavel de humor.
+  </p>
+  <h2>Cenarios avaliados</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Perfil</th>
+        <th>Sono</th>
+        <th>Estresse</th>
+        <th>Atividade</th>
+        <th>Social</th>
+        <th>Score</th>
+        <th>Categoria</th>
+        <th>Leitura</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-categoria="baixo"><td>Dia puxado</td><td>5.5</td><td>7.5</td><td>20</td><td>4.0</td><td>26.8</td><td>baixo</td><td>Categoria baixo: estresse alto puxou a previsao para baixo; sono curto reduziu a estabilidade do humor.</td></tr>
+    </tbody>
+  </table>
+  <section aria-labelledby="titulo-grafico-resultados">
+    <h2 id="titulo-grafico-resultados">Resultado por perfil</h2>
+    <div id="grafico-resultados" class="grafico"></div>
+  </section>
+  <section aria-labelledby="titulo-grafico-pertinencia">
+    <h2 id="titulo-grafico-pertinencia">Funcoes de pertinencia</h2>
+    <div id="grafico-pertinencia" class="grafico"></div>
+  </section>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="assets/js/previsao_humor_dados.js"></script>
+  <script src="assets/js/previsao_humor.js"></script>
+</body>
+</html>

@@ -1,80 +1,51 @@
 # Previsao de humor com logica fuzzy
 
-Este projeto traz um exemplo pratico e simples de logica fuzzy aplicado a previsao de humor.
+Este projeto traz uma interface interativa simples para estimar o humor do dia usando logica fuzzy.
 
-A ideia e transformar sinais cotidianos, como horas de sono, nivel de estresse, atividade fisica e interacao social positiva, em uma pontuacao de humor de 0 a 100.
+A pessoa informa quatro valores:
 
-O objetivo nao e criar um diagnostico psicologico. O objetivo e mostrar, de forma didatica, como regras fuzzy ajudam quando os criterios sao subjetivos e graduais. Por exemplo, uma pessoa nao passa de "sem estresse" para "estressada" de forma binaria. Ela pode estar um pouco estressada, moderadamente estressada ou muito estressada, e isso combina bem com logica fuzzy.
+- Horas de sono.
+- Nivel de estresse.
+- Minutos de atividade fisica.
+- Nivel de interacao social positiva.
 
-## Por que esse exemplo e legal
+A interface retorna uma pontuacao de 0 a 100, uma categoria (`baixo`, `neutro` ou `bom`), uma leitura textual do cenario e um proximo passo pratico.
 
-- Usa um problema proximo da vida real.
-- Mostra como variaveis subjetivas podem virar regras interpretaveis.
-- Gera uma previsao numerica e uma categoria simples: baixo, neutro ou bom.
-- Cria graficos HTML com as funcoes de pertinencia e os resultados dos cenarios.
-- Valida os dados de entrada para evitar resultados sem sentido.
+O resultado nao e diagnostico clinico. E uma leitura educativa baseada em regras fuzzy.
 
-## Entradas usadas
+## Como usar
 
-| Variavel | Escala | Interpretacao |
-| --- | ---: | --- |
-| Sono | 0 a 10 horas | Sono ruim, regular ou bom |
-| Estresse | 0 a 10 | Baixo, moderado ou alto |
-| Atividade fisica | 0 a 90 minutos | Baixa, moderada ou alta |
-| Interacao social positiva | 0 a 10 | Baixa, media ou alta |
-
-## Saida
-
-| Saida | Escala | Interpretacao |
-| --- | ---: | --- |
-| Humor previsto | 0 a 100 | Baixo, neutro ou bom |
-
-## Instalação
-
-Crie e ative o ambiente virtual:
-
-```powershell
-python -m venv venv
-venv\Scripts\Activate.ps1
-```
-
-Instale as dependencias:
-
-```powershell
-pip install -r requirements.txt
-```
-
-## Como executar
-
-Rodar os cenarios de exemplo:
-
-```powershell
-python src\previsao_humor_fuzzy.py
-```
-
-Rodar uma previsao personalizada:
-
-```powershell
-python src\previsao_humor_fuzzy.py --nome "Dia puxado" --sono 5.5 --estresse 7.5 --atividade 20 --social 4
-```
-
-O script gera um relatorio em:
+Abra o arquivo abaixo no navegador:
 
 ```text
-outputs/previsao_humor.html
+index.html
 ```
 
-## Decisoes tecnicas
+Nao precisa instalar bibliotecas, criar ambiente virtual ou rodar servidor local. A versao atual funciona com HTML, CSS e JavaScript puro.
 
-Fato: o projeto usa `scikit-fuzzy` para montar variaveis linguisticas, regras fuzzy e defuzzificacao.
+## Estrutura ativa
 
-Inferencia: sono, estresse, atividade fisica e interacao social foram escolhidos porque sao fatores cotidianos, faceis de medir em uma escala simples e intuitivos para explicar o resultado.
+```text
+index.html
+assets/css/app.css
+assets/js/app.js
+codex.md
+LICENSE
+README.md
+```
 
-Opiniao tecnica: usar uma biblioteca especializada e melhor do que implementar o motor fuzzy do zero neste caso, porque reduz risco de erro, deixa o exemplo mais limpo e aproxima o projeto de uma abordagem sustentavel.
+## Como funciona
+
+Fato: a interface usa funcoes de pertinencia fuzzy triangulares e trapezoidais no JavaScript.
+
+Inferencia: sono, estresse, atividade fisica e interacao social foram mantidos porque sao fatores cotidianos, faceis de preencher e bons para demonstrar conceitos graduais.
+
+Opiniao tecnica: manter a versao final como app estatico e melhor para este projeto, porque reduz custo de manutencao, elimina dependencias e facilita abrir a demonstracao em qualquer navegador.
 
 ## Limitacoes
 
-- O resultado e uma simulacao didatica, nao uma avaliacao clinica.
-- As regras foram definidas manualmente e podem ser ajustadas.
-- Correlacao nao implica causalidade: dormir pouco pode aparecer associado a humor baixo, mas isso nao prova sozinho que o sono foi a unica causa.
-- Em um ambiente real, seria necessario validar as regras com dados reais, feedback dos usuarios e acompanhamento de vieses.
+- Nao substitui avaliacao psicologica ou medica.
+- As regras foram definidas manualmente.
+- A pontuacao e uma aproximacao didatica, nao uma previsao cientifica validada.
+- Correlacao nao implica causalidade.
+- Em uso real, seria necessario validar regras com dados reais, revisar vieses e tratar dados pessoais com cuidado.
