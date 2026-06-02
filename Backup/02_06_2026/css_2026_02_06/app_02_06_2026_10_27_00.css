@@ -296,7 +296,6 @@ input[type='number'] {
   border-top: 1px solid var(--border);
   margin-top: 22px;
   padding-top: 18px;
-  position: relative;
 }
 
 .chart-header {
@@ -338,29 +337,6 @@ input[type='number'] {
   display: block;
   height: 240px;
   width: 100%;
-}
-
-.chart-tooltip {
-  background: #1f2933;
-  border-radius: 8px;
-  box-shadow: 0 10px 24px rgba(31, 41, 51, 0.22);
-  color: #fff;
-  font-size: 13px;
-  left: 0;
-  max-width: min(260px, calc(100% - 16px));
-  opacity: 0;
-  padding: 8px 10px;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  transform: translateY(-4px);
-  transition: opacity 120ms ease, transform 120ms ease;
-  z-index: 3;
-}
-
-.chart-tooltip.is-visible {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .chart-caption {

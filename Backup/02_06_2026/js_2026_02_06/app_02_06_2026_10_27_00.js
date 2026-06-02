@@ -47,7 +47,6 @@
     var apiStatus = document.querySelector('[data-api-status]');
     var canvas = document.querySelector('[data-chart-canvas]');
     var chartCaption = document.querySelector('[data-chart-caption]');
-    var chartTooltip = criarTooltip(canvas);
 
     function lerEntrada() {
       return campos.reduce(function (valores, campo) {
@@ -94,7 +93,7 @@
         fatores.appendChild(item);
       });
 
-      desenharGrafico(canvas, resultado.grafico, resultado.categoria, chartTooltip);
+      desenharGrafico(canvas, resultado.grafico, resultado.categoria);
       chartCaption.textContent = 'Variando ' + resultado.grafico.label.toLowerCase() + ', mantendo os outros valores atuais.';
       definirStatus('Python local conectado', 'ok');
     }
@@ -106,7 +105,7 @@
       recomendacao.textContent = 'Execute python app.py e acesse http://127.0.0.1:8000.';
       fatores.innerHTML = '<li>O JavaScript esta ativo, mas a API Python nao respondeu.</li>';
       definirStatus('Python local indisponivel', 'erro');
-      limparGrafico(canvas, 'Sem dados do Python local.', chartTooltip);
+      limparGrafico(canvas, 'Sem dados do Python local.');
     }
 
     function consultarDiagnostico() {
@@ -189,18 +188,12 @@
     consultarDiagnostico();
   }
 
-  function limparGrafico(canvas, mensagem, tooltip) {
+  function limparGrafico(canvas, mensagem) {
     var contexto = prepararCanvas(canvas);
     contexto.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     contexto.fillStyle = '#667085';
     contexto.font = '14px Arial';
     contexto.fillText(mensagem, 18, 34);
-
-    if (tooltip) {
-      ocultarTooltip(tooltip);
-    }
-    canvas.removeAttribute('title');
-    canvas._chartState = null;
   }
 
   function prepararCanvas(canvas) {
@@ -215,112 +208,7 @@
     return contexto;
   }
 
-  function criarTooltip(canvas) {
-    var tooltip = document.createElement('div');
-    tooltip.className = 'chart-tooltip';
-    tooltip.setAttribute('role', 'tooltip');
-    tooltip.setAttribute('aria-hidden', 'true');
-    canvas.parentElement.appendChild(tooltip);
-    canvas.tabIndex = 0;
-
-    canvas.addEventListener('mousemove', function (evento) {
-      mostrarTooltip(canvas, tooltip, evento);
-    });
-
-    canvas.addEventListener('mouseleave', function () {
-      ocultarTooltip(tooltip);
-    });
-
-    canvas.addEventListener('focus', function () {
-      mostrarTooltipNoValorAtual(canvas, tooltip);
-    });
-
-    canvas.addEventListener('blur', function () {
-      ocultarTooltip(tooltip);
-    });
-
-    return tooltip;
-  }
-
-  function ocultarTooltip(tooltip) {
-    tooltip.classList.remove('is-visible');
-    tooltip.setAttribute('aria-hidden', 'true');
-  }
-
-  function encontrarPontoMaisProximo(estado, localX) {
-    var grafico = estado.grafico;
-    var minX = estado.minX;
-    var maxX = estado.maxX;
-    var margem = estado.margem;
-    var areaLargura = estado.areaLargura;
-    var valorX = minX + ((localX - margem.esquerda) / areaLargura) * (maxX - minX);
-    var melhorPonto = grafico.pontos[0];
-    var menorDistancia = Math.abs(melhorPonto.x - valorX);
-
-    grafico.pontos.forEach(function (ponto) {
-      var distancia = Math.abs(ponto.x - valorX);
-      if (distancia < menorDistancia) {
-        melhorPonto = ponto;
-        menorDistancia = distancia;
-      }
-    });
-
-    return melhorPonto;
-  }
-
-  function coordenadasDoPonto(estado, ponto) {
-    var x = estado.margem.esquerda + ((ponto.x - estado.minX) / (estado.maxX - estado.minX)) * estado.areaLargura;
-    var y = estado.margem.topo + estado.areaAltura - ((ponto.y / 100) * estado.areaAltura);
-    return { x: x, y: y };
-  }
-
-  function posicionarTooltip(canvas, tooltip, coordenadas, texto) {
-    var parentRect = canvas.parentElement.getBoundingClientRect();
-    tooltip.textContent = texto;
-    tooltip.classList.add('is-visible');
-    tooltip.setAttribute('aria-hidden', 'false');
-
-    var left = coordenadas.x + 14;
-    var top = coordenadas.y - 44;
-    var maxLeft = parentRect.width - tooltip.offsetWidth - 8;
-    var maxTop = parentRect.height - tooltip.offsetHeight - 8;
-
-    tooltip.style.left = Math.max(8, Math.min(left, maxLeft)) + 'px';
-    tooltip.style.top = Math.max(8, Math.min(top, maxTop)) + 'px';
-  }
-
-  function mostrarTooltip(canvas, tooltip, evento) {
-    var estado = canvas._chartState;
-
-    if (!estado) {
-      return;
-    }
-
-    var rect = canvas.getBoundingClientRect();
-    var localX = evento.clientX - rect.left;
-    var ponto = encontrarPontoMaisProximo(estado, localX);
-    var coordenadas = coordenadasDoPonto(estado, ponto);
-    var texto = estado.grafico.label + ': ' + ponto.x + estado.grafico.unidade + ' | Score: ' + ponto.y.toFixed(1);
-    posicionarTooltip(canvas, tooltip, coordenadas, texto);
-  }
-
-  function mostrarTooltipNoValorAtual(canvas, tooltip) {
-    var estado = canvas._chartState;
-
-    if (!estado) {
-      return;
-    }
-
-    var ponto = encontrarPontoMaisProximo(
-      estado,
-      estado.margem.esquerda + ((estado.grafico.valorAtual - estado.minX) / (estado.maxX - estado.minX)) * estado.areaLargura
-    );
-    var coordenadas = coordenadasDoPonto(estado, ponto);
-    var texto = estado.grafico.label + ': ' + ponto.x + estado.grafico.unidade + ' | Score: ' + ponto.y.toFixed(1);
-    posicionarTooltip(canvas, tooltip, coordenadas, texto);
-  }
-
-  function desenharGrafico(canvas, grafico, categoria, tooltip) {
+  function desenharGrafico(canvas, grafico, categoria) {
     var contexto = prepararCanvas(canvas);
     var largura = canvas.clientWidth || 640;
     var altura = canvas.clientHeight || 240;
@@ -366,28 +254,11 @@
     contexto.stroke();
 
     var atualX = margem.esquerda + ((grafico.valorAtual - minX) / (maxX - minX)) * areaLargura;
-    var pontoAtual = encontrarPontoMaisProximo(
-      { grafico: grafico, minX: minX, maxX: maxX, margem: margem, areaLargura: areaLargura, areaAltura: areaAltura },
-      atualX
-    );
-    var coordenadasAtuais = coordenadasDoPonto(
-      { minX: minX, maxX: maxX, margem: margem, areaLargura: areaLargura, areaAltura: areaAltura },
-      pontoAtual
-    );
-
     contexto.strokeStyle = '#1f2933';
     contexto.lineWidth = 1.5;
     contexto.beginPath();
     contexto.moveTo(atualX, margem.topo);
     contexto.lineTo(atualX, margem.topo + areaAltura);
-    contexto.stroke();
-
-    contexto.fillStyle = '#ffffff';
-    contexto.strokeStyle = '#1f2933';
-    contexto.lineWidth = 2;
-    contexto.beginPath();
-    contexto.arc(coordenadasAtuais.x, coordenadasAtuais.y, 4, 0, Math.PI * 2);
-    contexto.fill();
     contexto.stroke();
 
     contexto.fillStyle = '#1f2933';
@@ -397,20 +268,7 @@
     contexto.fillText('100', 4, margem.topo + 4);
     contexto.fillText(String(minX), margem.esquerda, altura - 10);
     contexto.fillText(String(maxX), margem.esquerda + areaLargura - 20, altura - 10);
-
-    canvas.title = 'Passe o mouse no grafico para ver os valores.';
-    canvas._chartState = {
-      grafico: grafico,
-      minX: minX,
-      maxX: maxX,
-      margem: margem,
-      areaLargura: areaLargura,
-      areaAltura: areaAltura
-    };
-
-    if (tooltip) {
-      ocultarTooltip(tooltip);
-    }
+    contexto.fillText('Atual: ' + grafico.valorAtual + grafico.unidade, atualX + 6, margem.topo + 14);
   }
 
   document.addEventListener('DOMContentLoaded', iniciarInterface);
