@@ -98,26 +98,14 @@
 
   function montarRegras(graus) {
     return [
-      { forca: graus.sono.ruim * 0.65, saida: 'baixo' },
-      { forca: graus.estresse.alto * 0.8, saida: 'baixo' },
-      { forca: graus.atividade.baixa * 0.35, saida: 'baixo' },
-      { forca: graus.social.baixa * 0.35, saida: 'baixo' },
       { forca: Math.min(graus.sono.ruim, graus.estresse.alto), saida: 'baixo' },
       { forca: Math.min(graus.estresse.alto, graus.social.baixa), saida: 'baixo' },
       { forca: Math.min(graus.sono.ruim, graus.atividade.baixa), saida: 'baixo' },
       { forca: Math.min(graus.estresse.alto, graus.sono.regular), saida: 'baixo' },
       { forca: Math.min(graus.estresse.alto, graus.atividade.baixa), saida: 'baixo' },
-      { forca: graus.sono.regular * 0.35, saida: 'neutro' },
-      { forca: graus.estresse.moderado * 0.45, saida: 'neutro' },
-      { forca: graus.atividade.moderada * 0.35, saida: 'neutro' },
-      { forca: graus.social.media * 0.35, saida: 'neutro' },
       { forca: Math.min(graus.estresse.alto, graus.atividade.alta), saida: 'neutro' },
       { forca: Math.min(graus.sono.regular, graus.estresse.moderado), saida: 'neutro' },
       { forca: Math.min(graus.social.media, graus.atividade.moderada), saida: 'neutro' },
-      { forca: graus.sono.bom * 0.55, saida: 'bom' },
-      { forca: graus.estresse.baixo * 0.75, saida: 'bom' },
-      { forca: graus.atividade.alta * 0.45, saida: 'bom' },
-      { forca: graus.social.alta * 0.45, saida: 'bom' },
       { forca: Math.min(graus.sono.bom, graus.estresse.baixo), saida: 'bom' },
       { forca: Math.min(graus.sono.bom, graus.social.alta), saida: 'bom' },
       { forca: Math.min(graus.estresse.baixo, graus.atividade.moderada), saida: 'bom' },
@@ -151,21 +139,8 @@
     return numerador / denominador;
   }
 
-  function calcularScoreContinuo(entrada) {
-    var ajusteSono = (entrada.sono - 7) * 11;
-    var ajusteEstresse = (5 - entrada.estresse) * 8;
-    var ajusteAtividade = (entrada.atividade - 35) * 0.35;
-    var ajusteSocial = (entrada.social - 5) * 5;
-
-    return limitar(50 + ajusteSono + ajusteEstresse + ajusteAtividade + ajusteSocial, 0, 100);
-  }
-
-  function combinarPontuacoes(pontuacaoFuzzy, pontuacaoContinua) {
-    return limitar((pontuacaoFuzzy * 0.45) + (pontuacaoContinua * 0.55), 0, 100);
-  }
-
   function classificar(pontuacao) {
-    if (pontuacao < 45) {
+    if (pontuacao < 40) {
       return 'baixo';
     }
 
@@ -187,18 +162,6 @@
 
     if (entrada.estresse >= 7) {
       return 'O humor ficou no meio termo, mas o estresse está pesando.';
-    }
-
-    if (entrada.sono < 6) {
-      return 'O humor ficou no meio termo, mas o sono curto está puxando para baixo.';
-    }
-
-    if (entrada.atividade < 20) {
-      return 'O humor ficou no meio termo, mas pouca atividade física limitou a melhora.';
-    }
-
-    if (entrada.social < 4) {
-      return 'O humor ficou no meio termo, mas baixa interação social reduziu a leitura.';
     }
 
     return 'Os fatores ficaram em faixas intermediárias.';
@@ -275,9 +238,7 @@
     var entrada = normalizarEntrada(entradaBruta);
     var graus = pertinencias(entrada);
     var regras = montarRegras(graus);
-    var pontuacaoFuzzy = defuzzificar(regras);
-    var pontuacaoContinua = calcularScoreContinuo(entrada);
-    var pontuacao = combinarPontuacoes(pontuacaoFuzzy, pontuacaoContinua);
+    var pontuacao = defuzzificar(regras);
     var categoria = classificar(pontuacao);
 
     return {

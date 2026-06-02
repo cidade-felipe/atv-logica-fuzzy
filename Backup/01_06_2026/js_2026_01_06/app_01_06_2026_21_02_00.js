@@ -152,16 +152,16 @@
   }
 
   function calcularScoreContinuo(entrada) {
-    var ajusteSono = (entrada.sono - 7) * 11;
-    var ajusteEstresse = (5 - entrada.estresse) * 8;
-    var ajusteAtividade = (entrada.atividade - 35) * 0.35;
-    var ajusteSocial = (entrada.social - 5) * 5;
+    var ajusteSono = (entrada.sono - 7) * 8;
+    var ajusteEstresse = (5 - entrada.estresse) * 7;
+    var ajusteAtividade = (entrada.atividade - 35) * 0.28;
+    var ajusteSocial = (entrada.social - 5) * 4.2;
 
     return limitar(50 + ajusteSono + ajusteEstresse + ajusteAtividade + ajusteSocial, 0, 100);
   }
 
   function combinarPontuacoes(pontuacaoFuzzy, pontuacaoContinua) {
-    return limitar((pontuacaoFuzzy * 0.45) + (pontuacaoContinua * 0.55), 0, 100);
+    return limitar((pontuacaoFuzzy * 0.55) + (pontuacaoContinua * 0.45), 0, 100);
   }
 
   function classificar(pontuacao) {
