@@ -194,9 +194,7 @@ def combinar_pontuacoes(pontuacao_fuzzy: float, pontuacao_continua: float) -> fl
 def classificar(pontuacao: float) -> str:
     if pontuacao < 45:
         return 'baixo'
-    if pontuacao < 65:
-        return 'neutro'
-    return 'bom'
+    return 'neutro' if pontuacao < 65 else 'bom'
 
 
 def diagnosticar(entrada: EntradaHumor, categoria: str) -> str:
