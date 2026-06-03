@@ -25,7 +25,7 @@ LIMITES = {
 GRAFICOS = {
     'sono': {'label': 'Sono', 'unidade': 'h', 'casas': 1},
     'estresse': {'label': 'Estresse', 'unidade': '/10', 'casas': 1},
-    'atividade': {'label': 'Atividade fisica', 'unidade': 'min', 'casas': 0},
+    'atividade': {'label': 'Atividade fisica', 'unidade': 'min', 'casas': 1},
     'social': {'label': 'Interacao social', 'unidade': '/10', 'casas': 1},
 }
 
