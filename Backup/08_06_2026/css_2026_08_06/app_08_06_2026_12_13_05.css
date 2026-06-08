@@ -1,4 +1,3 @@
-/* Tokens visuais globais usados para manter a interface consistente. */
 :root {
   --bg: #f4f7fb;
   --panel: #ffffff;
@@ -11,12 +10,10 @@
   --bom: #2f9c67;
 }
 
-/* Reset leve para facilitar calculo de largura e altura dos elementos. */
 * {
   box-sizing: border-box;
 }
 
-/* Base tipografica e plano de fundo da aplicacao. */
 body {
   background: var(--bg);
   color: var(--text);
@@ -25,20 +22,17 @@ body {
   margin: 0;
 }
 
-/* Controles herdam a mesma fonte do restante da interface. */
 button,
 input {
   font: inherit;
 }
 
-/* Container principal com largura maxima confortavel em desktop. */
 .app-shell {
   margin: 0 auto;
   max-width: 1180px;
   padding: 28px 20px 40px;
 }
 
-/* Cabecalho em duas colunas: titulo de um lado, aviso educativo do outro. */
 .app-header {
   align-items: end;
   display: flex;
@@ -47,7 +41,6 @@ input {
   margin-bottom: 22px;
 }
 
-/* Rotulo pequeno acima do titulo, usado para contextualizar o exemplo fuzzy. */
 .eyebrow {
   color: var(--accent);
   font-size: 14px;
@@ -56,7 +49,6 @@ input {
   text-transform: uppercase;
 }
 
-/* Remove margem superior padrao dos textos para controlar melhor o espacamento. */
 h1,
 h2,
 h3,
@@ -64,26 +56,22 @@ p {
   margin-top: 0;
 }
 
-/* Titulo principal da pagina. */
 h1 {
   font-size: 34px;
   line-height: 1.15;
   margin-bottom: 0;
 }
 
-/* Titulos dos paineis principais. */
 h2 {
   font-size: 20px;
   margin-bottom: 0;
 }
 
-/* Subtitulos internos, como fatores principais e proximo passo. */
 h3 {
   font-size: 15px;
   margin-bottom: 8px;
 }
 
-/* Aviso de seguranca: reforca que o resultado nao e clinico. */
 .safety-note {
   color: var(--muted);
   font-size: 14px;
@@ -92,7 +80,6 @@ h3 {
   text-align: right;
 }
 
-/* Grade principal: controles a esquerda e diagnostico a direita. */
 .workspace {
   align-items: start;
   display: grid;
@@ -100,7 +87,6 @@ h3 {
   grid-template-columns: minmax(320px, 430px) 1fr;
 }
 
-/* Painel visual usado nas areas principais da aplicacao. */
 .panel {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -109,7 +95,6 @@ h3 {
   padding: 20px;
 }
 
-/* Linha de titulo dentro de cada painel, com acao alinhada a direita quando existe. */
 .section-title {
   align-items: center;
   display: flex;
@@ -118,7 +103,6 @@ h3 {
   margin-bottom: 18px;
 }
 
-/* Estilo compartilhado para botoes secundarios e presets. */
 .ghost-button,
 .preset-row button {
   background: #fff;
@@ -130,13 +114,11 @@ h3 {
   padding: 8px 12px;
 }
 
-/* Feedback simples de hover para indicar elementos clicaveis. */
 .ghost-button:hover,
 .preset-row button:hover {
   border-color: var(--accent);
 }
 
-/* Linha dos tres cenarios rapidos. */
 .preset-row {
   display: grid;
   gap: 8px;
@@ -144,18 +126,15 @@ h3 {
   margin-bottom: 18px;
 }
 
-/* Grupo de cada campo, separado por uma linha horizontal. */
 .field-group {
   border-top: 1px solid var(--border);
   padding: 16px 0;
 }
 
-/* Remove sobra de espacamento no ultimo campo do formulario. */
 .field-group:last-child {
   padding-bottom: 0;
 }
 
-/* Cabecalho do campo: nome do fator e valor formatado atual. */
 .field-label {
   align-items: center;
   display: flex;
@@ -164,18 +143,15 @@ h3 {
   margin-bottom: 10px;
 }
 
-/* Nome do fator com peso visual maior. */
 .field-label label {
   font-weight: 700;
 }
 
-/* Valor textual do campo, usando numeros alinhados para nao ficar pulando. */
 .field-label output {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
-/* Par de inputs: slider largo e campo numerico compacto. */
 .input-pair {
   align-items: center;
   display: grid;
@@ -183,13 +159,11 @@ h3 {
   grid-template-columns: 1fr 82px;
 }
 
-/* Slider nativo com a cor principal do projeto. */
 input[type='range'] {
   accent-color: var(--accent);
   width: 100%;
 }
 
-/* Campo numerico para ajuste fino dos valores. */
 input[type='number'] {
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -198,12 +172,10 @@ input[type='number'] {
   width: 100%;
 }
 
-/* Altura minima evita que o painel de resultado encolha enquanto dados mudam. */
 .result-panel {
   min-height: 700px;
 }
 
-/* Pill da categoria do diagnostico. */
 .status-pill {
   border-radius: 999px;
   color: #fff;
@@ -212,30 +184,25 @@ input[type='number'] {
   padding: 6px 12px;
 }
 
-/* Cor de estado quando o resultado aponta humor baixo. */
 .result-panel[data-categoria='baixo'] .status-pill,
 .result-panel[data-categoria='baixo'] .score-fill {
   background: var(--baixo);
 }
 
-/* Cor de estado quando o resultado esta neutro. */
 .result-panel[data-categoria='neutro'] .status-pill,
 .result-panel[data-categoria='neutro'] .score-fill {
   background: var(--neutro);
 }
 
-/* Cor de estado quando o resultado aponta humor bom. */
 .result-panel[data-categoria='bom'] .status-pill,
 .result-panel[data-categoria='bom'] .score-fill {
   background: var(--bom);
 }
 
-/* Agrupa numero do score e barra de progresso. */
 .score-area {
   margin-bottom: 20px;
 }
 
-/* Alinha score grande com o sufixo /100. */
 .score-number {
   align-items: baseline;
   display: flex;
@@ -243,20 +210,17 @@ input[type='number'] {
   margin-bottom: 10px;
 }
 
-/* Numero principal do diagnostico. */
 .score-number span {
   font-size: 52px;
   font-weight: 800;
   line-height: 1;
 }
 
-/* Sufixo pequeno ao lado do score. */
 .score-number small {
   color: var(--muted);
   font-size: 18px;
 }
 
-/* Trilho da barra de score. */
 .score-meter {
   background: #edf1f5;
   border-radius: 999px;
@@ -264,7 +228,6 @@ input[type='number'] {
   overflow: hidden;
 }
 
-/* Preenchimento da barra, animado para responder bem as mudancas. */
 .score-fill {
   border-radius: inherit;
   height: 100%;
@@ -272,14 +235,12 @@ input[type='number'] {
   width: 50%;
 }
 
-/* Texto principal que explica a leitura do cenario. */
 .diagnostic-text {
   color: var(--text);
   font-size: 18px;
   margin-bottom: 22px;
 }
 
-/* Indicador de conexao com o backend Python. */
 .api-status {
   border-radius: 999px;
   color: var(--muted);
@@ -289,32 +250,27 @@ input[type='number'] {
   padding: 5px 10px;
 }
 
-/* Estado conectado da API local. */
 .api-status[data-status='ok'] {
   background: #e7f6ee;
   color: #226c49;
 }
 
-/* Estado de calculo em andamento. */
 .api-status[data-status='loading'] {
   background: #eef6ff;
   color: #2f6fed;
 }
 
-/* Estado de erro quando o Python local nao responde. */
 .api-status[data-status='erro'] {
   background: #fbeaea;
   color: #a33b35;
 }
 
-/* Grade dos blocos explicativos abaixo do diagnostico. */
 .insight-grid {
   display: grid;
   gap: 16px;
   grid-template-columns: 1.2fr 1fr;
 }
 
-/* Lista de fatores principais, sem marcadores padrao. */
 .factor-list {
   display: grid;
   gap: 8px;
@@ -323,7 +279,6 @@ input[type='number'] {
   padding: 0;
 }
 
-/* Cartoes pequenos para fatores e recomendacao. */
 .factor-list li,
 .next-step {
   background: #f7f9fc;
@@ -332,13 +287,11 @@ input[type='number'] {
   padding: 12px;
 }
 
-/* Texto secundario dentro do proximo passo. */
 .next-step p {
   color: var(--muted);
   margin-bottom: 0;
 }
 
-/* Area do grafico de sensibilidade, separada do diagnostico textual. */
 .chart-card {
   border-top: 1px solid var(--border);
   margin-top: 22px;
@@ -346,7 +299,6 @@ input[type='number'] {
   position: relative;
 }
 
-/* Cabecalho do grafico com titulo e botoes de fator. */
 .chart-header {
   align-items: center;
   display: flex;
@@ -355,7 +307,6 @@ input[type='number'] {
   margin-bottom: 12px;
 }
 
-/* Grupo de botoes para alternar a curva do grafico. */
 .chart-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -363,7 +314,6 @@ input[type='number'] {
   justify-content: flex-end;
 }
 
-/* Botao de selecao do fator analisado no grafico. */
 .chart-buttons button {
   background: #fff;
   border: 1px solid var(--border);
@@ -374,7 +324,6 @@ input[type='number'] {
   padding: 6px 10px;
 }
 
-/* Destaque do fator selecionado. */
 .chart-buttons button[aria-pressed='true'] {
   background: #eef6ff;
   border-color: var(--accent);
@@ -382,7 +331,6 @@ input[type='number'] {
   font-weight: 700;
 }
 
-/* Canvas onde a curva local e desenhada pelo JavaScript. */
 .sensitivity-chart {
   background: #fff;
   border: 1px solid var(--border);
@@ -392,7 +340,6 @@ input[type='number'] {
   width: 100%;
 }
 
-/* Tooltip HTML que substitui texto fixo dentro do Canvas. */
 .chart-tooltip {
   background: #1f2933;
   border-radius: 8px;
@@ -411,20 +358,17 @@ input[type='number'] {
   z-index: 3;
 }
 
-/* Estado visivel do tooltip. */
 .chart-tooltip.is-visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Legenda curta abaixo do grafico. */
 .chart-caption {
   color: var(--muted);
   font-size: 14px;
   margin: 8px 0 0;
 }
 
-/* Ajustes para tablet e telas estreitas: empilha cabecalho, paineis e insights. */
 @media (max-width: 850px) {
   .app-header {
     align-items: start;
@@ -450,7 +394,6 @@ input[type='number'] {
   }
 }
 
-/* Ajustes finais para celular pequeno. */
 @media (max-width: 520px) {
   .app-shell {
     padding: 20px 12px 28px;

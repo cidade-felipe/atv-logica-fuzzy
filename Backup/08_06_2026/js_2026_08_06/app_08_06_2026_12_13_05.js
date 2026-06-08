@@ -1,10 +1,8 @@
 (function () {
   'use strict';
 
-  // Endpoint local calculado pelo backend Python.
   var API_URL = '/api/humor';
 
-  // Limites e formatacao dos controles, espelhando as faixas aceitas pela API.
   var LIMITES = {
     sono: { min: 0, max: 10, unidade: ' h', casas: 1 },
     estresse: { min: 0, max: 10, unidade: '/10', casas: 1 },
@@ -12,31 +10,26 @@
     social: { min: 0, max: 10, unidade: '/10', casas: 1 }
   };
 
-  // Perfis rapidos para testar cenarios comuns sem preencher tudo manualmente.
   var PERFIS = {
     pesado: { sono: 4.5, estresse: 8.5, atividade: 5, social: 2 },
     equilibrado: { sono: 7, estresse: 4.5, atividade: 35, social: 6 },
     treino: { sono: 8, estresse: 2.5, atividade: 60, social: 8 }
   };
 
-  // Estado minimo da interface: grafico selecionado, debounce e controle de resposta mais recente.
   var graficoAtual = 'sono';
   var debounceId = null;
   var requisicaoAtual = 0;
 
   function limitar(valor, minimo, maximo) {
-    // Garante que inputs digitados manualmente nao escapem dos limites visuais.
     return Math.min(Math.max(valor, minimo), maximo);
   }
 
   function formatarValor(nome, valor) {
-    // Converte o numero em texto amigavel para o output ao lado do label.
     var limite = LIMITES[nome];
     return Number(valor).toFixed(limite.casas) + limite.unidade;
   }
 
   function iniciarInterface() {
-    // Busca os elementos principais da pagina uma vez, evitando consultas repetidas.
     var formulario = document.querySelector('[data-humor-form]');
 
     if (!formulario) {
@@ -57,7 +50,6 @@
     var chartTooltip = criarTooltip(canvas);
 
     function lerEntrada() {
-      // Le somente os sliders, porque eles sempre ficam sincronizados com os inputs numericos.
       return campos.reduce(function (valores, campo) {
         valores[campo.name] = Number(campo.value);
         return valores;
@@ -65,7 +57,6 @@
     }
 
     function sincronizarCampo(nome, valor) {
-      // Mantem range, input numerico e texto de saida mostrando exatamente o mesmo valor.
       var limite = LIMITES[nome];
       var range = formulario.querySelector('input[name="' + nome + '"]');
       var numero = formulario.querySelector('[data-number="' + nome + '"]');
@@ -78,21 +69,17 @@
     }
 
     function definirStatus(texto, tipo) {
-      // Atualiza a pill que informa se o Python esta calculando, online ou indisponivel.
       apiStatus.textContent = texto;
       apiStatus.setAttribute('data-status', tipo);
     }
 
     function renderizarResultado(resultado) {
-      // Aplica a resposta do Python na interface, sem recalcular fuzzy no navegador.
       var categoriaTexto = resultado.categoria.charAt(0).toUpperCase() + resultado.categoria.slice(1);
 
-      // O backend devolve a entrada validada, entao a tela reflete valores corrigidos se necessario.
       Object.keys(resultado.entrada).forEach(function (nome) {
         sincronizarCampo(nome, resultado.entrada[nome]);
       });
 
-      // Atualiza os elementos centrais do diagnostico.
       painel.setAttribute('data-categoria', resultado.categoria);
       score.textContent = resultado.pontuacao.toFixed(1);
       scoreFill.style.width = resultado.pontuacao.toFixed(1) + '%';
@@ -100,7 +87,6 @@
       diagnostico.textContent = resultado.diagnostico;
       recomendacao.textContent = resultado.recomendacao;
 
-      // Recria a lista de fatores principais retornada pela API.
       fatores.innerHTML = '';
       resultado.fatores.forEach(function (fator) {
         var item = document.createElement('li');
@@ -108,14 +94,12 @@
         fatores.appendChild(item);
       });
 
-      // O grafico usa pontos vindos do Python e apenas desenha a curva em Canvas.
       desenharGrafico(canvas, resultado.grafico, resultado.categoria, chartTooltip);
       chartCaption.textContent = 'Variando ' + resultado.grafico.label.toLowerCase() + ', mantendo os outros valores atuais.';
       definirStatus('Python local conectado', 'ok');
     }
 
     function renderizarErro(mensagem) {
-      // Estado de falha claro para quando a pagina abrir sem o servidor Python rodando.
       painel.setAttribute('data-categoria', 'neutro');
       categoriaLabel.textContent = 'Offline';
       diagnostico.textContent = mensagem;
@@ -126,13 +110,11 @@
     }
 
     function consultarDiagnostico() {
-      // Cada requisicao recebe um id para ignorar respostas antigas que chegarem atrasadas.
       var id = ++requisicaoAtual;
       var entrada = lerEntrada();
 
       definirStatus('Calculando no Python...', 'loading');
 
-      // Envia o estado atual para a API local, incluindo qual curva o usuario quer ver.
       fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -147,13 +129,11 @@
           return resposta.json();
         })
         .then(function (resultado) {
-          // So a resposta mais recente pode alterar a tela.
           if (id === requisicaoAtual) {
             renderizarResultado(resultado);
           }
         })
         .catch(function (erro) {
-          // O mesmo controle de id evita que um erro antigo sobreponha um resultado novo.
           if (id === requisicaoAtual) {
             renderizarErro(erro.message);
           }
@@ -161,12 +141,10 @@
     }
 
     function agendarDiagnostico() {
-      // Pequeno debounce deixa a interface sensivel sem disparar uma chamada por pixel do slider.
       window.clearTimeout(debounceId);
       debounceId = window.setTimeout(consultarDiagnostico, 90);
     }
 
-    // Eventos dos controles manuais, tanto slider quanto input numerico.
     campos.forEach(function (campo) {
       var numero = formulario.querySelector('[data-number="' + campo.name + '"]');
 
@@ -181,7 +159,6 @@
       });
     });
 
-    // Eventos dos botoes de perfil rapido.
     document.querySelectorAll('[data-profile]').forEach(function (botao) {
       botao.addEventListener('click', function () {
         var perfil = PERFIS[botao.getAttribute('data-profile')];
@@ -192,7 +169,6 @@
       });
     });
 
-    // Reset volta para o perfil equilibrado, que funciona como cenario base.
     document.querySelector('[data-reset]').addEventListener('click', function () {
       Object.keys(PERFIS.equilibrado).forEach(function (nome) {
         sincronizarCampo(nome, PERFIS.equilibrado[nome]);
@@ -200,7 +176,6 @@
       consultarDiagnostico();
     });
 
-    // Botoes que escolhem qual fator sera variado no grafico de sensibilidade.
     document.querySelectorAll('[data-chart-factor]').forEach(function (botao) {
       botao.addEventListener('click', function () {
         graficoAtual = botao.getAttribute('data-chart-factor');
@@ -211,12 +186,10 @@
       });
     });
 
-    // Primeira consulta, para preencher a tela assim que o app carrega.
     consultarDiagnostico();
   }
 
   function limparGrafico(canvas, mensagem, tooltip) {
-    // Desenha uma mensagem simples no Canvas quando nao ha dados validos para a curva.
     var contexto = prepararCanvas(canvas);
     contexto.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     contexto.fillStyle = '#667085';
@@ -231,7 +204,6 @@
   }
 
   function prepararCanvas(canvas) {
-    // Ajusta a resolucao real do Canvas para telas comuns e telas de alta densidade.
     var proporcao = window.devicePixelRatio || 1;
     var largura = canvas.clientWidth || 640;
     var altura = canvas.clientHeight || 240;
@@ -244,7 +216,6 @@
   }
 
   function criarTooltip(canvas) {
-    // Cria um tooltip HTML sobre o Canvas, evitando texto cortado dentro do grafico.
     var tooltip = document.createElement('div');
     tooltip.className = 'chart-tooltip';
     tooltip.setAttribute('role', 'tooltip');
@@ -252,7 +223,6 @@
     canvas.parentElement.appendChild(tooltip);
     canvas.tabIndex = 0;
 
-    // Mouse e teclado compartilham a mesma logica de exibicao para melhorar acessibilidade.
     canvas.addEventListener('mousemove', function (evento) {
       mostrarTooltip(canvas, tooltip, evento);
     });
@@ -273,13 +243,11 @@
   }
 
   function ocultarTooltip(tooltip) {
-    // Esconde o tooltip sem remover o elemento, evitando recriacao desnecessaria.
     tooltip.classList.remove('is-visible');
     tooltip.setAttribute('aria-hidden', 'true');
   }
 
   function encontrarPontoMaisProximo(estado, localX) {
-    // Converte a posicao horizontal do cursor para o valor do fator no universo do grafico.
     var grafico = estado.grafico;
     var minX = estado.minX;
     var maxX = estado.maxX;
@@ -289,7 +257,6 @@
     var melhorPonto = grafico.pontos[0];
     var menorDistancia = Math.abs(melhorPonto.x - valorX);
 
-    // Procura o ponto calculado pelo Python que fica mais perto do cursor.
     grafico.pontos.forEach(function (ponto) {
       var distancia = Math.abs(ponto.x - valorX);
       if (distancia < menorDistancia) {
@@ -302,14 +269,12 @@
   }
 
   function coordenadasDoPonto(estado, ponto) {
-    // Mapeia coordenadas de dados para coordenadas de tela dentro da area util do Canvas.
     var x = estado.margem.esquerda + ((ponto.x - estado.minX) / (estado.maxX - estado.minX)) * estado.areaLargura;
     var y = estado.margem.topo + estado.areaAltura - ((ponto.y / 100) * estado.areaAltura);
     return { x: x, y: y };
   }
 
   function posicionarTooltip(canvas, tooltip, coordenadas, texto) {
-    // Posiciona o tooltip perto do ponto, mas prende o elemento dentro do card do grafico.
     var parentRect = canvas.parentElement.getBoundingClientRect();
     tooltip.textContent = texto;
     tooltip.classList.add('is-visible');
@@ -325,7 +290,6 @@
   }
 
   function mostrarTooltip(canvas, tooltip, evento) {
-    // Mostra valores do ponto mais proximo do cursor.
     var estado = canvas._chartState;
 
     if (!estado) {
@@ -341,7 +305,6 @@
   }
 
   function mostrarTooltipNoValorAtual(canvas, tooltip) {
-    // Quando o Canvas recebe foco pelo teclado, mostra o ponto do valor atual.
     var estado = canvas._chartState;
 
     if (!estado) {
@@ -358,7 +321,6 @@
   }
 
   function desenharGrafico(canvas, grafico, categoria, tooltip) {
-    // Desenha eixos, grade, curva e marcador atual usando apenas Canvas local.
     var contexto = prepararCanvas(canvas);
     var largura = canvas.clientWidth || 640;
     var altura = canvas.clientHeight || 240;
@@ -370,7 +332,6 @@
     var maxX = pontos[pontos.length - 1].x;
     var cor = categoria === 'baixo' ? '#d95f59' : categoria === 'bom' ? '#2f9c67' : '#d9a441';
 
-    // Limpa o quadro e desenha os eixos principais.
     contexto.clearRect(0, 0, largura, altura);
     contexto.strokeStyle = '#d9e0e8';
     contexto.lineWidth = 1;
@@ -380,7 +341,6 @@
     contexto.lineTo(margem.esquerda + areaLargura, margem.topo + areaAltura);
     contexto.stroke();
 
-    // Linhas horizontais ajudam a ler rapidamente 25, 50 e 75 no score.
     [25, 50, 75].forEach(function (valor) {
       var y = margem.topo + areaAltura - ((valor / 100) * areaAltura);
       contexto.strokeStyle = '#edf1f5';
@@ -390,7 +350,6 @@
       contexto.stroke();
     });
 
-    // Curva principal de sensibilidade, colorida pela categoria atual.
     contexto.strokeStyle = cor;
     contexto.lineWidth = 3;
     contexto.beginPath();
@@ -406,7 +365,6 @@
     });
     contexto.stroke();
 
-    // Marcador vertical mostra onde o valor atual do usuario cai na curva.
     var atualX = margem.esquerda + ((grafico.valorAtual - minX) / (maxX - minX)) * areaLargura;
     var pontoAtual = encontrarPontoMaisProximo(
       { grafico: grafico, minX: minX, maxX: maxX, margem: margem, areaLargura: areaLargura, areaAltura: areaAltura },
@@ -417,7 +375,6 @@
       pontoAtual
     );
 
-    // Linha vertical e bolinha destacam o ponto atual sem escrever texto dentro do Canvas.
     contexto.strokeStyle = '#1f2933';
     contexto.lineWidth = 1.5;
     contexto.beginPath();
@@ -433,7 +390,6 @@
     contexto.fill();
     contexto.stroke();
 
-    // Marcadores de escala essenciais, mantidos curtos para nao disputar espaco com a curva.
     contexto.fillStyle = '#1f2933';
     contexto.font = '12px Arial';
     contexto.fillText('0', 14, margem.topo + areaAltura + 4);
@@ -442,7 +398,6 @@
     contexto.fillText(String(minX), margem.esquerda, altura - 10);
     contexto.fillText(String(maxX), margem.esquerda + areaLargura - 20, altura - 10);
 
-    // Estado interno usado pelo tooltip para saber como transformar mouse em ponto da curva.
     canvas.title = 'Passe o mouse no grafico para ver os valores.';
     canvas._chartState = {
       grafico: grafico,
@@ -453,12 +408,10 @@
       areaAltura: areaAltura
     };
 
-    // A cada redesenho, o tooltip antigo e escondido para evitar informacao desatualizada.
     if (tooltip) {
       ocultarTooltip(tooltip);
     }
   }
 
-  // Ponto de entrada da camada interativa depois que o HTML esta disponivel.
   document.addEventListener('DOMContentLoaded', iniciarInterface);
 })();
