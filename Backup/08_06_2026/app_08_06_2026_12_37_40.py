@@ -1,12 +1,5 @@
 from __future__ import annotations
 
-# =============================================================================
-# BLOCO 1 - Introducao e bibliotecas
-# Roteiro: este arquivo concentra a parte Python da previsao de humor.
-# O scikit-fuzzy cuida das funcoes fuzzy e o numpy cuida dos arrays numericos.
-# Observacao: o resultado e educativo, nao um diagnostico clinico.
-# =============================================================================
-
 import argparse
 import json
 import math
@@ -19,12 +12,6 @@ from urllib.parse import urlparse
 import numpy as np
 import skfuzzy as fuzz
 
-
-# =============================================================================
-# BLOCO 2 - Definicao do problema e fatores avaliados
-# Roteiro: o modelo observa sono, estresse, atividade fisica e interacao social,
-# depois transforma esses fatores em um score de humor de 0 a 100.
-# =============================================================================
 
 # Caminho base usado pelo servidor para entregar HTML, CSS e JS locais.
 BASE_DIR = Path(__file__).resolve().parent
@@ -44,12 +31,6 @@ GRAFICOS = {
     'atividade': {'label': 'Atividade fisica', 'unidade': 'min', 'casas': 1},
     'social': {'label': 'Interacao social', 'unidade': '/10', 'casas': 1},
 }
-
-# =============================================================================
-# BLOCO 3 - Por que logica fuzzy: universos e pertinencias
-# Roteiro: em vez de tratar tudo como verdadeiro ou falso, cada valor pode
-# pertencer parcialmente a termos como ruim, regular, bom, baixo, medio e alto.
-# =============================================================================
 
 # Universos discretos onde as funcoes de pertinencia sao avaliadas.
 UNIVERSOS = {
@@ -91,12 +72,6 @@ FUNCOES_HUMOR = {
     'bom': fuzz.trapmf(UNIVERSOS['humor'], [55, 75, 100, 100]),
 }
 
-
-# =============================================================================
-# BLOCO 4 - Entrada numerica e validacao da API
-# Roteiro: antes da fuzzificacao, o JSON recebido vira uma estrutura confiavel,
-# com tipos numericos e limites iguais aos universos definidos acima.
-# =============================================================================
 
 @dataclass(frozen=True)
 class EntradaHumor:
@@ -143,12 +118,6 @@ def ler_entrada(payload: dict[str, Any]) -> EntradaHumor:
     )
 
 
-# =============================================================================
-# BLOCO 5 - Etapa 1 do Mamdani: fuzzificacao
-# Roteiro: valores numericos, como 6 horas de sono, viram graus linguisticos.
-# A funcao interp_membership calcula esse grau dentro da curva fuzzy.
-# =============================================================================
-
 def grau_pertinencia(variavel: str, termo: str, valor: float) -> float:
     # Interpola o grau de pertinencia do valor informado dentro da curva fuzzy escolhida.
     universo = UNIVERSOS[variavel]
@@ -181,12 +150,6 @@ def pertinencias(entrada: EntradaHumor) -> dict[str, dict[str, float]]:
         },
     }
 
-
-# =============================================================================
-# BLOCO 6 - Etapa 2 do Mamdani: avaliacao das regras
-# Roteiro: as 24 regras combinam fatores do dia. O AND fuzzy usa min(), entao
-# a forca de uma regra composta fica limitada pela condicao mais fraca.
-# =============================================================================
 
 def montar_regras(graus: dict[str, dict[str, float]]) -> list[tuple[float, str]]:
     # Cada tupla representa: forca de ativacao da regra, categoria de humor impactada.
@@ -224,12 +187,6 @@ def montar_regras(graus: dict[str, dict[str, float]]) -> list[tuple[float, str]]
     ]
 
 
-# =============================================================================
-# BLOCO 7 - Etapas 3 e 4 do Mamdani: agregacao e defuzzificacao
-# Roteiro: as regras ativadas sao unidas com OR fuzzy por fmax e depois a area
-# agregada vira um numero unico pelo centroide com skfuzzy.defuzz.
-# =============================================================================
-
 def defuzzificar(regras: list[tuple[float, str]]) -> float:
     # Comeca com uma curva de saida zerada e vai agregando as regras ativadas.
     agregado = np.zeros_like(UNIVERSOS['humor'], dtype=float)
@@ -247,12 +204,6 @@ def defuzzificar(regras: list[tuple[float, str]]) -> float:
     return float(fuzz.defuzz(UNIVERSOS['humor'], agregado, 'centroid'))
 
 
-# =============================================================================
-# BLOCO 8 - Detalhe hibrido: camada continua de sensibilidade
-# Roteiro: o score final mistura 45% fuzzy e 55% linear para que pequenas
-# mudancas nos controles aparecam melhor na interface.
-# =============================================================================
-
 def calcular_score_continuo(entrada: EntradaHumor) -> float:
     # Camada complementar que deixa pequenas mudancas nos controles aparecerem no score.
     ajuste_sono = (entrada.sono - 7) * 11
@@ -266,12 +217,6 @@ def combinar_pontuacoes(pontuacao_fuzzy: float, pontuacao_continua: float) -> fl
     # Mistura o raciocinio fuzzy com a camada continua para preservar didatica e sensibilidade.
     return limitar((pontuacao_fuzzy * 0.45) + (pontuacao_continua * 0.55), 0, 100)
 
-
-# =============================================================================
-# BLOCO 9 - Resultado interpretavel: categoria, diagnostico e recomendacao
-# Roteiro: depois do score, o codigo traduz a leitura em baixo, neutro ou bom,
-# lista fatores principais e sugere um proximo passo simples.
-# =============================================================================
 
 def classificar(pontuacao: float) -> str:
     # Converte o score numerico em uma categoria simples para a interface.
@@ -370,12 +315,6 @@ def calcular_humor(entrada: EntradaHumor) -> dict[str, Any]:
     }
 
 
-# =============================================================================
-# BLOCO 10 - Grafico local de sensibilidade
-# Roteiro: o Python calcula pontos variando um fator por vez. O JavaScript so
-# desenha esses pontos no Canvas, sem recalcular logica fuzzy no navegador.
-# =============================================================================
-
 def gerar_curva(entrada: EntradaHumor, fator: str) -> dict[str, Any]:
     # A curva mostra como o score mudaria ao variar apenas um fator por vez.
     if fator not in LIMITES:
@@ -404,12 +343,6 @@ def gerar_curva(entrada: EntradaHumor, fator: str) -> dict[str, Any]:
         'pontos': pontos,
     }
 
-
-# =============================================================================
-# BLOCO 11 - Arquitetura da aplicacao: servidor HTTP local e API
-# Roteiro: o app.py serve os arquivos estaticos e expoe POST /api/humor para o
-# frontend enviar valores e receber score, categoria, fatores, recomendacao e curva.
-# =============================================================================
 
 class AppHandler(SimpleHTTPRequestHandler):
     # Handler HTTP simples: serve arquivos estaticos e responde as rotas da API local.
@@ -469,12 +402,6 @@ class AppHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(corpo)
 
-
-# =============================================================================
-# BLOCO 12 - Execucao local
-# Roteiro: a aplicacao sobe em http://127.0.0.1:8000 por padrao, mas host e
-# porta podem ser alterados por argumento de linha de comando.
-# =============================================================================
 
 def parse_args() -> argparse.Namespace:
     # Permite trocar host e porta sem editar o arquivo.
